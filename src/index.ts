@@ -10,4 +10,9 @@ export {
 	type NetworkInput,
 	type NetworkClients,
 } from "./clients/OnChainBuilder";
+export {
+	GoldrushClient,
+	initGoldrushClient,
+	getGoldrushClient,
+} from "./clients/GoldRushBalancesClient";
 

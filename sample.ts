@@ -11,8 +11,8 @@ const inputs: NetworkInput[] = [
     chainId: 1,
     chainName: "eth-mainnet",
     rpcUrl: "https://eth-mainnet.g.alchemy.com/v2/GwL4E_7jzhO6_eH_aV3tkKlELSh7UQEO",
-    factory: "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
-    base: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    factory: ["0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"],
+    base: ["0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"],
     walletAddress: ZERO,
     quoteCurrency: "USD",
     chain: mainnet,
@@ -20,8 +20,17 @@ const inputs: NetworkInput[] = [
 ];
 
 const nets = buildOnChain(inputs);
-const { erc20Client, uniClient, addressClient } = nets[0];
+const { erc20Client, uniClient, addressClient, goldrushClient } = nets[0];
 
 console.log(await erc20Client.get(WETH, ZERO, ZERO));
 console.log(await erc20Client.get(USDC, ZERO, ZERO));
-console.log(await uniClient.findPairsForTokenAgainstBases(nets[0].config.factory, WETH, [USDC], 0n, 100n));
+console.log(await uniClient.findPairsForTokenInFactory(nets[0].config.factory[0], WETH, 0n, 3n));
+console.log(await addressClient.get(WETH));
+
+console.log(await goldrushClient.getHistoricalTokenPrices({
+  chainName: nets[0].config.chainName,
+  quoteCurrency: "USD",
+  contractAddresses: [WETH, USDC],
+  from: "2025-01-01",
+  to: "2025-01-02",
+}));
