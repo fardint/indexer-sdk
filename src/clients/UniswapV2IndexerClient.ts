@@ -1,6 +1,7 @@
 import type { Address, Chain } from "viem";
-import { BaseClient, type BaseClientOptions } from "./BaseClient";
+import { createPublicClient, http } from "viem";
 import { UNISWAP_V2_INDEXER_ABI } from "../contracts/abis";
+import type { OnChainConfig } from "./types";
 
 export interface PairView {
 	pair: Address;
@@ -12,9 +13,16 @@ export interface PairView {
 	price1: bigint;
 }
 
-export class UniswapV2IndexerClient<TChain extends Chain | undefined = Chain | undefined> extends BaseClient<TChain> {
-	constructor(address: Address, options: BaseClientOptions<TChain> = {}) {
-		super(address, options);
+export class UniswapV2IndexerClient<TChain extends Chain | undefined = Chain | undefined> {
+	protected readonly client: any;
+	protected readonly address: Address;
+
+	constructor(address: Address, options: OnChainConfig<TChain> = {}) {
+		this.address = address;
+		this.client = createPublicClient({
+			chain: options.chain,
+			transport: http(options.rpcUrl),
+		});
 	}
 
 	public async findPair(factory: Address, tokenA: Address, tokenB: Address) {

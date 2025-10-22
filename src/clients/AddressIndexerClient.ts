@@ -1,13 +1,21 @@
 import type { Address, Chain } from "viem";
-import { BaseClient, type BaseClientOptions } from "./BaseClient";
+import { createPublicClient, http } from "viem";
 import { ADDRESS_INDEXER_ABI } from "../contracts/abis";
+import type { OnChainConfig } from "./types";
 
-export class AddressIndexerClient<TChain extends Chain | undefined = Chain | undefined> extends BaseClient<TChain> {
-	constructor(address: Address, options: BaseClientOptions<TChain> = {}) {
-		super(address, options);
+export class AddressIndexerClient<TChain extends Chain | undefined = Chain | undefined> {
+	protected readonly client: any;
+	protected readonly address: Address;
+
+	constructor(address: Address, options: OnChainConfig<TChain> = {}) {
+		this.address = address;
+		this.client = createPublicClient({
+			chain: options.chain,
+			transport: http(options.rpcUrl),
+		});
 	}
 
-	public async get(account: Address) {
+    public async get(account: Address) {
 		const tuple = (await this.client.readContract({
 			abi: ADDRESS_INDEXER_ABI,
 			address: this.address,
@@ -18,7 +26,7 @@ export class AddressIndexerClient<TChain extends Chain | undefined = Chain | und
 		return { bal, isContract, codehash };
 	}
 
-	public async getBatch(accounts: Address[]) {
+    public async getBatch(accounts: Address[]) {
 		const res = (await this.client.readContract({
 			abi: ADDRESS_INDEXER_ABI,
 			address: this.address,
