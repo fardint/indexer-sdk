@@ -34,3 +34,13 @@ console.log(await goldrushClient.getHistoricalTokenPrices({
   from: "2025-01-01",
   to: "2025-01-02",
 }));
+
+// console.log(await goldrushClient.getTokenHoldersV2ForTokenAddress({
+// 	chainName: nets[0].config.chainName,
+// 	tokenAddress: WETH,
+// 	blockHeight: 18446744073709551615,
+// 	date: "2025-01-01",
+// 	pageSize: 100,
+// 	pageNumber: 1,
+// 	noSnapshot: false,
+// }));

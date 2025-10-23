@@ -117,7 +117,7 @@
     },
     "networks": [
       {
-        "id": "56",
+        "id": "1",
         "name": "ethereum",
         "standard": ["erc20", "erc1400"],
         "contractVerified": true,

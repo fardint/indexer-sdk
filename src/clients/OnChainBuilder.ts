@@ -4,7 +4,7 @@ import { AddressIndexerClient } from "./AddressIndexerClient";
 import { Erc20IndexerClient } from "./Erc20IndexerClient";
 import { UniswapV2IndexerClient } from "./UniswapV2IndexerClient";
 import { getModuleAddresses } from "../contracts/addresses";
-import { GoldrushClient, initGoldrushClient } from "./GoldRushBalancesClient";
+import { GoldrushClient, initGoldrushClient } from "./GoldRushClient";
 
 export interface NetworkInput<TChain extends Chain | undefined = Chain | undefined> extends OnChainConfig<TChain> {
 	chainId: number;

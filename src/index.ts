@@ -14,5 +14,5 @@ export {
 	GoldrushClient,
 	initGoldrushClient,
 	getGoldrushClient,
-} from "./clients/GoldRushBalancesClient";
+} from "./clients/GoldRushClient";
 
