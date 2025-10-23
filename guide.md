@@ -1,130 +1,101 @@
-# Backend Integration Guide for The Block Indexer SDK
+# Backend Integration Guide — The Block Indexer SDK
 
-This guide explains how backend services should use this SDK to fetch on-chain data daily and cache it (Redis recommended) for serving APIs and other services.
+Purpose
 
-## Goals
-- Use the SDK to fetch token, pair, and address data once per day.
-- Cache "live" or frequently requested objects (prices, balances, pairs) in Redis for low-latency API responses.
-- Provide a reliable scheduled job with good error handling and monitoring.
+- Provide a concise, operational checklist for backend teams to run a daily data-collection job that uses the SDK and caches results in Redis for the remainder of the day.
 
-## What this SDK provides
-- Clients for on-chain indexers that read pre-deployed indexing contracts:
-  - `AddressIndexerClient` — address metadata: balance, isContract, codehash.
-  - `Erc20IndexerClient` — token metadata and balances.
-  - `UniswapV2IndexerClient` — pair discovery and reserves/prices.
-  - `GoldrushClient` — Covalent GoldRush HTTP client (historical prices, holders, balances).
-- A builder helper `buildOnChain` / `buildOnChainForNetwork` that creates a set of clients for a given network input.
+What to collect (daily snapshot)
 
-Key exports (from `src/index.ts`):
-- `buildOnChain(inputs)` — build clients for multiple networks.
-- `buildOnChainForNetwork(input)` — build clients for a single network.
-- `AddressIndexerClient`, `Erc20IndexerClient`, `UniswapV2IndexerClient`, `GoldrushClient`.
+- Token metadata: name, symbol, decimals, total supply for tracked tokens.
+- Token price history for the day or configured date ranges.
+- Token balances for monitored wallets.
+- Pair discovery and reserves for tracked tokens vs configured bases (used to compute prices/liquidity).
+- Address metadata for monitored addresses: balance, isContract, codehash.
+- Optional: token holders pages and other historical datasets needed for analytics.
 
-## Quick initialization
-1. Install package (if published) or use local package.
+Job cadence and scheduling
 
-2. Provide RPC URL and (optionally) `viem` chain object when building clients.
+- Run a daily job as a baseline (suggested: 02:00 UTC). Raise frequency (hourly/15m) only if your use case demands fresher data.
+- Use a scheduler that fits your infrastructure: cron (Linux), Task Scheduler (Windows), Kubernetes CronJob, or a managed cloud scheduler.
 
-Example builder usage (TypeScript):
+Operational contract (inputs / outputs / success criteria)
 
-```ts
-import { buildOnChain } from "the-block-indexer-sdk";
+- Inputs: network config (chainId, chainName, RPC URL(s)), tracked token list, factories/bases, monitored wallets/addresses, API keys for third-party services.
+- Outputs: Redis keys containing snapshots and live cache objects; daily snapshot files or keys for auditing.
+- Success: the job writes the required Redis keys and records a success marker (timestamp and status). On partial failure, record error details and do not overwrite previous successful snapshots without explicit intent.
 
-const nets = buildOnChain([
-  {
-    chainId: 1,
-    chainName: "eth-mainnet",
-    rpcUrl: process.env.ETH_RPC_URL!,
-    factory: ["0x..."],
-    base: ["0x..."],
-    walletAddress: "0x...",
-    quoteCurrency: "USD",
-  },
-]);
+Redis key design and TTLs
 
-const net = nets[0];
-// net.addressClient, net.erc20Client, net.uniClient, net.goldrushClient
-```
+- Use a consistent namespace: `indexer:<chainName>:<type>:<id or date>`
+- Recommended key patterns and retention:
+  - Daily snapshot (archival): `indexer:<chainName>:tokens:snapshot:<YYYY-MM-DD>` — retain for 30 days (no short TTL).
+  - Per-token metadata: `indexer:<chainName>:token:<tokenAddress>:meta` — TTL: 24h (or refresh daily).
+  - Pair view + reserves: `indexer:<chainName>:pair:<pairAddress>:view` — TTL: 1h (refresh more often if needed).
+  - Address metadata: `indexer:<chainName>:address:<address>` — TTL: 24h.
+  - Holders pages: `indexer:<chainName>:holders:<tokenAddress>:page:<n>` — TTL: 24h.
+- Use Redis Hashes for small structured objects to reduce memory overhead and make partial updates cheaper.
+- Use date-suffixed keys for snapshots to preserve historical context and avoid accidental overwrite.
 
-## Daily fetch pattern (recommended)
-- Run a scheduled job (cron, systemd timer, or cloud scheduler) once per day (or more often if desired).
-- For each network you manage, call a deterministic set of SDK methods to gather the data you need.
-- Store results in Redis with short TTLs for ephemeral live data or long TTLs for daily snapshot data.
-- Use optimistic retries for RPC errors, but avoid unlimited retries.
+Error handling and retries (best practices)
 
-Suggested snapshot contents to store once per day:
-- Token list metadata: name, symbol, decimals, totalSupply (via `erc20Client.getBatch`).
-- Token balances for key wallets (via `goldrushClient.getTokenBalancesForWalletAddress` or `erc20Client.get` for single tokens).
-- Pair discovery and reserves for tracked tokens (via `uniClient.findPairsForTokenInFactory`).
-- Address metadata for important addresses (via `addressClient.getBatch`).
-- Historical prices (via `goldrushClient.getHistoricalTokenPrices`).
+- Classify errors: transient (network, 5xx), rate-limited, and fatal (invalid config, missing secrets).
+- Transient errors: retry with exponential backoff (e.g., 3 attempts). Implement jitter to reduce thundering herds.
+- Rate limits: detect provider rate-limit responses and back off; consider provider-side rate buckets and reduce concurrency.
+- Fatal errors: fail fast and surface alerts (missing API key, invalid config).
+- For partial results: write a status key (`indexer:<chainName>:snapshot:<date>:status`) with success=false and error details, then abort overwrite of the previous complete snapshot.
 
-Suggested Redis keys (example namespace: `indexer:<chainName>:`):
-- `indexer:eth-mainnet:tokens:snapshot:2025-10-23` (daily snapshot json)
-- `indexer:eth-mainnet:token:<address>:meta` (token metadata, TTL: 24h)
-- `indexer:eth-mainnet:pair:<pairAddress>:view` (pair view + reserves, TTL: 1h)
-- `indexer:eth-mainnet:address:<address>` (address metadata, TTL: 24h)
+Concurrency and provider resilience
 
-## Example script
-A starter example `scripts/daily-fetch.ts` is included in this repo. It demonstrates:
-- Initializing the clients with `buildOnChain`.
-- Fetching a small set of tokens/pairs/addresses.
-- Pushing results to Redis.
+- Batch work where supported to reduce RPC calls (use batch/indexer contract endpoints rather than per-item RPC queries).
+- Limit concurrent RPC calls to each provider to a safe value derived from your provider's rate limits.
+- Use provider fallbacks: configure multiple RPC endpoints and switch to a healthy fallback when the primary is rate-limited or down.
 
-Important notes in the script:
-- Set `GOLDRUSH_API_KEY` in the environment for Goldrush usage.
-- Set `REDIS_URL` for the Redis connection.
-- Configure concurrency carefully to avoid RPC rate limits.
+Data validation and canonicalization
 
-## Error handling and retries
-- Use exponential backoff for retryable errors (network, 5xx responses).
-- For non-retryable errors (invalid args, missing env), fail fast and alert.
-- Log failures with structured logs that include chainName, network RPC URL, and request details.
+- Validate numeric values (balances, reserves) and convert to canonical types (strings or big integers) before writing to Redis.
+- Normalize addresses using a single canonical format used by your stack (checksummed or lowercase consistently).
+- Include timestamps in ISO 8601 UTC for any time-based records and snapshots.
 
-## Scheduling and running the job
-- Example cron (UTC) to run daily at 02:00: 0 2 * * *
-- In Windows Task Scheduler use an equivalent daily task.
-- In cloud environments use their scheduler/cron-like services; ensure environment variables are available.
+Monitoring, metrics, and alerting
 
-## Monitoring and alerts
-- Track job success/failure with metrics: job_duration_seconds, job_success (bool), last_success_timestamp.
-- Send alert on repeated failures (e.g., >3 consecutive failures).
-- Monitor Redis memory and eviction to ensure snapshots are not evicted unexpectedly.
+- Emit these metrics for each job run: job_duration_seconds, job_success (0/1), rpc_errors_total, redis_writes_total, redis_write_errors_total.
+- Health checks: record last_success_timestamp in Redis for quick operational checks.
+- Alerts: trigger when consecutive failures exceed a threshold (e.g., 3), or when RPC error rates or Redis write errors spike.
 
-## Redis schema & TTL guidance
-- Keep snapshot keys with date suffix for historical debugging (no TTL or long TTL e.g., 30d).
-- Keep live keys short (1h or less) and refresh them every fetch run if needed.
-- Consider using Redis Hashes for small structured objects to reduce memory overhead.
+Security and secrets
 
-## Example TypeScript snippet: cache to Redis
+- Keep API keys and RPC credentials in a secrets manager or environment variables; never commit them to source control.
+- Limit network access and host permissions for the job runner to reduce blast radius.
+- Sanitize logs to avoid exposing secrets.
 
-```ts
-import Redis from "ioredis";
-import { buildOnChain } from "the-block-indexer-sdk";
+Observability and debugging tips
 
-const redis = new Redis(process.env.REDIS_URL);
-const nets = buildOnChain([/* ... */]);
-const net = nets[0];
+- Assign a request ID (UUID) to each job run and include it in logs, Redis writes, and downstream traces.
+- When investigating stale or missing data:
+  - Check the last snapshot key and the job status key.
+  - Review logs scoped by the job request ID.
+  - Verify RPC provider health and rate-limit headers.
+- Keep daily snapshots for at least 30 days for auditing/debugging.
 
-// fetch token meta and cache
-const tokenAddresses = ["0x...", "0x..."];
-const meta = await net.erc20Client.getBatch(tokenAddresses as any, net.config.walletAddress, "0x0000000000000000000000000000000000000000");
-await redis.set(`indexer:${net.config.chainName}:tokens:meta`, JSON.stringify(meta), "EX", 60 * 60 * 24);
-```
+Retention and TTL summary
 
-## Security
-- Do not commit API keys. Use environment variables or a secrets manager.
-- Limit network access for the scheduled job where possible.
+- Live, frequently-updated objects (pairs, prices for hot endpoints): TTL ~1 hour.
+- Per-day snapshots and holders pages: TTL 24 hours (or archive snapshots for 30 days if you need history).
+- Long-term audit snapshots: retain for 30+ days as required by your compliance or debugging needs.
 
-## Next steps (recommended)
-- Wire the included `scripts/daily-fetch.ts` into your cron/CI pipeline.
-- Add tests around the data transformation logic you use before writing to Redis.
-- Add metrics and alerts for the job.
+Minimal operational checklist (pre-run)
 
----
-If you'd like, I can also:
-- Add the `scripts/daily-fetch.ts` starter script to this repository (I already did).
-- Add a small README snippet showing Windows Task Scheduler or a cron example.
-- Create a lightweight Dockerfile to run the fetch job in containers.
+1. Ensure environment variables/secrets are present: RPC_URL(s), Goldrush API key (if used), Redis connection string.
+2. Confirm Redis has enough memory and a predictable eviction policy.
+3. Verify outbound network access to RPC providers and any third-party APIs.
+4. Validate the job with a one-off manual run before scheduling.
+5. Ensure metrics and alerting are configured for job runs.
 
-Tell me which extras you'd like and I'll add them.
+Next steps (non-code)
+
+- Decide snapshot retention policy and TTLs aligned with storage and regulatory needs.
+- Choose job host and scheduler (k8s CronJob, VM Task Scheduler, or managed cloud scheduler).
+- Choose RPC provider concurrency limits and fallback order.
+- Configure dashboards and alerts for job success/failure and Redis health.
+
+If you want, I can produce a one-page printable checklist for ops, or tailor retention/TTL recommendations to your traffic profile and token list.
