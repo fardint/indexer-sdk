@@ -96,9 +96,9 @@ The CoinGecko API offers REST (and WebSocket for higher tiers) endpoints to retr
 - **Asset Metadata & Listings** — information about assets (symbols, names, identifiers) listed across many exchanges and chains.
 - **Current Market Quotes / Valuation** — real-time price data, conversion rates (crypto ↔ fiat), which can help value tokenised RWAs.
 - **Historical Market Data & OHLCV** — historical price/volume/time series which allow tracking of valuation trends of RWA-tokens.  
-- **Exchange & DEX Data** — aggregated listings across many centralized and decentralized exchanges, useful for liquidity and market-access visibility. 
+- **Exchange & DEX Data** — aggregated listings across many centralized and decentralized exchanges, useful for liquidity and market-access visibility.
 - **Multi-chain Coverage** — API supports data across 250+ blockchain networks, 1,700+ DEXes and 15M+ tokens, providing broad coverage for RWA tokens on different chains.
-- **Streaming / WebSocket (Premium)** — for real-time price and trade updates, enabling live monitoring of RWA token markets. 
+- **Streaming / WebSocket (Premium)** — for real-time price and trade updates, enabling live monitoring of RWA token markets.
 
 ## RWA Asset Data from RWA.xyz Platform
 
@@ -107,18 +107,32 @@ The RWA.xyz platform provides a data-centric view of tokenised Real-World Assets
 - **Asset-level Metadata & Structures** — insights into token structures, underlying reserves, legal/issuer jurisdiction, custodians, associated entities.  
 - **On-chain Transaction & Ownership Data** — token mints/burns, transfers, token holder counts, network metrics (chains, platforms) for RWA tokens.
 - **Off-chain Backing & Asset Reporting** — reserve values, CUSIPs, legal frameworks, issuer filings and service provider details supporting transparency of underlying real-world assets.
-- **Aggregated Market Metrics** — total on-chain issuance volume across assets/networks, number of issuers, networks covered, “Total RWA value” dashboard view. 
+- **Aggregated Market Metrics** — total on-chain issuance volume across assets/networks, number of issuers, networks covered, “Total RWA value” dashboard view.
 - **API & Data-Download Access** — enterprise-ready APIs and data downloads enable integration of RWA.xyz datasets into research platforms, analytics dashboards or institutional workflows.
-- **Multi-chain & Multi-asset support** — The platform covers issuance across 12+ blockchain networks and multiple asset classes (treasuries, private credit, commodities, etc.). 
+- **Multi-chain & Multi-asset support** — The platform covers issuance across 12+ blockchain networks and multiple asset classes (treasuries, private credit, commodities, etc.).
 
 ## RWA Asset Data from CoinMarketCap (CMC) API
 
 The CoinMarketCap API provides comprehensive cryptocurrency- and market-data endpoints which can contribute to RWA (Real-World Asset)-tokenised asset monitoring. Key data capabilities include:
 
-- **Asset Metadata & Listings** — information about assets (name, symbol, website, logo, token status) via metadata endpoints. 
+- **Asset Metadata & Listings** — information about assets (name, symbol, website, logo, token status) via metadata endpoints.
 - **Current Market Quotes / Valuation** — real-time price quotes, market capitalisation, volume (for tokens including those representing RWAs) in fiat or crypto conversions.
 - **Historical Market Data & Time-Series** — historical OHLCV (Open, High, Low, Close, Volume) data useful for tracking performance/trends of RWA-tokenised assets.
 - **Global Metrics & Market Depth** — aggregate metrics like total market cap, dominance (e.g., BTC dominance) which can support broader RWA market context and benchmarking.  
 - **Programmable Access & Integration** — RESTful JSON endpoints, well-documented, with free and paid tiers, enabling integration into dashboards or analytics platforms for RWA-token tracking.
 
 These capabilities make CMC’s API useful for building tools that monitor token-ised real-world assets: tracking market value, liquidity, historic trends, and metadata of underlying tokens.
+
+## RWA Asset Data via Chainlink Automated Compliance Engine (ACE)
+
+The Chainlink Automated Compliance Engine (ACE) facilitates the tokenization of Real‑World Assets (RWAs) by integrating compliance and identity frameworks directly into smart contracts. Key data capabilities include:
+
+- **Cross-Chain Identity (CCID) Framework**: Enables the representation of investor identities, attestations, and credentials across multiple blockchains. It stores cryptographic proofs of verified credentials, such as Know Your Customer (KYC), Anti‑Money Laundering (AML), and investor sophistication status, while keeping personal information offchain.
+
+- **CCT Compliance Extension**: Allows smart contracts to enforce compliance policies, such as investment limits and jurisdictional restrictions, based on the investor's identity and credentials. This ensures that only eligible investors can participate in RWA token offerings.
+
+- **Policy Manager**: Automates the enforcement of compliance policies by integrating with offchain systems and data sources. It ensures that all transactions involving RWA tokens adhere to regulatory requirements.
+
+- **Monitoring & Reporting Manager**: Provides real-time monitoring and reporting of compliance status, enabling issuers and regulators to track and audit RWA token transactions.
+
+These components collectively enable the secure and compliant tokenization and management of Real‑World Assets on blockchain platforms.
