@@ -27,20 +27,18 @@ console.log(await erc20Client.get(USDC, ZERO, ZERO));
 console.log(await uniClient.findPairsForTokenInFactory(nets[0].config.factory[0], WETH, 0n, 3n));
 console.log(await addressClient.get(WETH));
 
-console.log(await goldrushClient.getHistoricalTokenPrices({
-  chainName: nets[0].config.chainName,
-  quoteCurrency: "USD",
-  contractAddresses: [WETH, USDC],
-  from: "2025-01-01",
-  to: "2025-01-02",
-}));
-
-// console.log(await goldrushClient.getTokenHoldersV2ForTokenAddress({
-// 	chainName: nets[0].config.chainName,
-// 	tokenAddress: WETH,
-// 	blockHeight: 18446744073709551615,
-// 	date: "2025-01-01",
-// 	pageSize: 100,
-// 	pageNumber: 1,
-// 	noSnapshot: false,
+// console.log(await goldrushClient.getHistoricalTokenPrices({
+//   chainName: nets[0].config.chainName,
+//   quoteCurrency: "USD",
+//   contractAddresses: [WETH, USDC],
+//   from: "2025-01-01",
+//   to: "2025-01-02",
 // }));
+
+console.log(await goldrushClient.getTokenHoldersV2ForTokenAddress({
+	chainName: nets[0].config.chainName,
+	tokenAddress: USDC,
+	pageSize: 100,
+	pageNumber: 0,
+	noSnapshot: false,
+}));
