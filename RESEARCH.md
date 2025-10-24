@@ -66,7 +66,7 @@ The Etherscan APIs provide on-chain data access for EVM-compatible chains (50+ s
 
 These capabilities enable tracking, auditing and analytics of tokenised real-world assets (RWAs) that are issued on the blockchain, including ownership changes, contract behaviour, token-supply flow and interactions.
 
-### RWA Asset Data from The Graph Studio
+## RWA Asset Data from The Graph Studio
 
 The Graph Studio allows you to build, deploy and query subgraphs for “RWA”-tokenized asset ecosystems. Key capabilities include:
 
@@ -89,7 +89,7 @@ Bitquery’s GraphQL API lets you gather rich on-chain data for tokenised Real-W
 - **Cross-Chain / Multi-Asset Support** — support for 40+ blockchains, allowing asset-tracking beyond a single chain (useful if RWA assets exist on multiple chains).
 - **Real-Time & Historical Data** — choose between archived (‘combined’) data and real-time streams, enabling both retrospective audits and live monitoring of RWA token activity.
 
-### RWA Asset Data from CoinGecko API
+## RWA Asset Data from CoinGecko API
 
 The CoinGecko API offers REST (and WebSocket for higher tiers) endpoints to retrieve market-data and metadata that can support monitoring of tokenised Real-World Assets (RWAs). Key datasets include:
 
