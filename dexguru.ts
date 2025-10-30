@@ -59,7 +59,7 @@ async function run() {
     tokenMints: `${tokenBase}/transactions/mints?begin_timestamp=${BEGIN_TIMESTAMP}&sort_by=${SORT_BY}&order=${ORDER}&limit=100&offset=0`,
     tokenTransfers: `${tokenBase}/transactions/transfers?begin_timestamp=${BEGIN_TIMESTAMP}&sort_by=${SORT_BY}&order=${ORDER}&limit=100&offset=0`,
     udfHistory: (() => {
-      const u = new URL(`${base}/v1/udf/history`);
+      const u = new URL(`${base}/v1/tradingview/history`);
       u.searchParams.set("symbol", `${NETWORK_ID}_${TOKEN_ADDRESS}`);
       const now = Math.floor(Date.now() / 1000);
       u.searchParams.set("from", String(now - 86400));
