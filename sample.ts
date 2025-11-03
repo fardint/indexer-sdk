@@ -1,5 +1,5 @@
 import { Address } from "viem";
-import { buildOnChain, type NetworkInput, DexscreenerClient } from "./src";
+import { buildOnChain, type NetworkInput, DexscreenerClient, StellarExpertClient } from "./src";
 import { base, mainnet } from "viem/chains";
 
 const ZERO: Address = "0x0000000000000000000000000000000000000000";
@@ -50,6 +50,17 @@ const dsData = await dexscreener.getPairsByToken("USD1ttGY1N17NEEHLmELoaybftRBUS
 console.log(
   JSON.stringify(
     dsData,
+    null,
+    2
+  )
+);
+
+// Stellar Expert sample: fetch asset details for BENJI
+const stellar = new StellarExpertClient();
+const benji = await stellar.getAsset("BENJI-GBHNGLLIE3KWGKCHIKMHJ5HVZHYIK7WTBE4QF5PLAKL4CJGSEU7HZIW5");
+console.log(
+  JSON.stringify(
+    benji,
     null,
     2
   )

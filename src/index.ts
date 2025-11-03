@@ -21,4 +21,9 @@ export {
 	type DexscreenerPairItem,
 	type DexscreenerClientConfig,
 } from "./clients/DexscreenerClient";
+export {
+	StellarExpertClient,
+	type StellarExpertClientConfig,
+	type StellarExpertAssetResponse,
+} from "./clients/StellarExpertClient";
 
