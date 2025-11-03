@@ -15,4 +15,10 @@ export {
 	initGoldrushClient,
 	getGoldrushClient,
 } from "./clients/GoldRushClient";
+export {
+	DexscreenerClient,
+	type DexscreenerPairsResponse,
+	type DexscreenerPairItem,
+	type DexscreenerClientConfig,
+} from "./clients/DexscreenerClient";
 

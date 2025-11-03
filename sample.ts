@@ -1,5 +1,5 @@
 import { Address } from "viem";
-import { buildOnChain, type NetworkInput } from "./src";
+import { buildOnChain, type NetworkInput, DexscreenerClient } from "./src";
 import { base, mainnet } from "viem/chains";
 
 const ZERO: Address = "0x0000000000000000000000000000000000000000";
@@ -24,25 +24,36 @@ const inputs: NetworkInput[] = [
 const nets = buildOnChain(inputs);
 const { erc20Client, uniClient, addressClient, goldrushClient } = nets[0];
 
-console.log(await erc20Client.get(TOKEN, ZERO, ZERO));
+// console.log(await erc20Client.get(TOKEN, ZERO, ZERO));
 // console.log(await erc20Client.get(USDC, ZERO, ZERO));
 // console.log(await uniClient.findPairsForTokenInFactory(nets[0].config.factory[0], TOKEN , 0n, 464n));
 // console.log(await addressClient.get(TOKEN));
 
+// console.log(
+//   JSON.stringify(
+//     await goldrushClient.getHistoricalTokenPrices({
+//       chainName: nets[0].config.chainName,
+//       quoteCurrency: "USD",
+//       contractAddresses: TOKEN,
+//       from: "2025-10-27",
+//       to: "2025-10-28",
+//     }),
+//     null,
+//     2
+//   )
+// );
+
+
+// Dexscreener sample: fetch pairs for a token on Solana (USD1)
+const dexscreener = new DexscreenerClient();
+const dsData = await dexscreener.getPairsByToken("USD1ttGY1N17NEEHLmELoaybftRBUSErhqYiQzvEmuB");
 console.log(
   JSON.stringify(
-    await goldrushClient.getHistoricalTokenPrices({
-      chainName: nets[0].config.chainName,
-      quoteCurrency: "USD",
-      contractAddresses: TOKEN,
-      from: "2025-10-27",
-      to: "2025-10-28",
-    }),
+    dsData,
     null,
     2
   )
 );
-
 
 // console.log(JSON.stringify(await goldrushClient.getTokenHoldersV2ForTokenAddress({
 // 	chainName: nets[0].config.chainName,
