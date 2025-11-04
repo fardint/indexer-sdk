@@ -26,4 +26,15 @@ export {
 	type StellarExpertClientConfig,
 	type StellarExpertAssetResponse,
 } from "./clients/StellarExpertClient";
+export {
+	AptoscanClient,
+	type AptoscanClientConfig,
+	type AptoscanResponse,
+	type AptoscanFungibleAssetData,
+} from "./clients/AptoscanClient";
+export {
+	XrpscanClient,
+	type XrpscanClientConfig,
+	type XrpscanTokenResponse,
+} from "./clients/XrpscanClient";
 

@@ -14,3 +14,26 @@ https://api.aptoscan.com/public/v1.0/coins/0x357b0b74bc833e95a115ad22604854d6b0f
 
 https://api.xrpscan.com/api/v1/token/RLUSD.rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De
 https://docs.xrpscan.com/api-documentation/token/token-list
+
+
+query {
+  fungible_asset_metadata(
+    where: {asset_type:  {
+       _eq: "0x7647a37bb1ee1f42953ca4a00f1cf347254d38a2aa31d2e37176bbb94c14cf75"
+    }}
+    offset: 0
+    limit: 100
+  ) {
+    symbol
+    name
+    decimals
+    asset_type
+    project_uri
+    icon_uri
+    supply_aggregator_table_key_v1
+    supply_v2
+    last_transaction_timestamp
+    
+    __typename
+  }
+}
