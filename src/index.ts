@@ -37,4 +37,9 @@ export {
 	type XrpscanClientConfig,
 	type XrpscanTokenResponse,
 } from "./clients/XrpscanClient";
+export {
+	AptosIndexerClient,
+	type AptosIndexerClientConfig,
+	type AptosFungibleAssetMetadata,
+} from "./clients/AptosIndexerClient";
 

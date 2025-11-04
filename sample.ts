@@ -1,5 +1,5 @@
 import { Address } from "viem";
-import { buildOnChain, type NetworkInput, DexscreenerClient, StellarExpertClient, AptoscanClient, XrpscanClient } from "./src";
+import { buildOnChain, type NetworkInput, DexscreenerClient, StellarExpertClient, XrpscanClient, AptosIndexerClient } from "./src";
 import { base, mainnet } from "viem/chains";
 
 const ZERO: Address = "0x0000000000000000000000000000000000000000";
@@ -66,10 +66,10 @@ const { erc20Client, uniClient, addressClient, goldrushClient } = nets[0];
 //   )
 // );
 
-// Aptoscan sample: fetch fungible asset details (disabled due to captcha)
-// const aptoscan = new AptoscanClient();
-// const aptAsset = await aptoscan.getFungibleAsset("0x7647a37bb1ee1f42953ca4a00f1cf347254d38a2aa31d2e37176bbb94c14cf75");
-// console.log(JSON.stringify(aptAsset, null, 2));
+// Aptos Indexer (GraphQL) sample: fetch fungible asset metadata
+const aptIndexer = new AptosIndexerClient();
+const aptosMeta = await aptIndexer.getFungibleAssetMetadata("0x7647a37bb1ee1f42953ca4a00f1cf347254d38a2aa31d2e37176bbb94c14cf75");
+console.log(JSON.stringify(aptosMeta, null, 2));
 
 // XRPSCan sample: fetch RLUSD token details
 // const xrpscan = new XrpscanClient();
