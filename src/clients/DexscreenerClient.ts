@@ -60,6 +60,25 @@ export interface DexscreenerPairsResponse {
 	pairs: DexscreenerPairItem[];
 }
 
+export interface DexscreenerTokenSummary {
+	tokenAddress: string;
+	chains: string[];
+	numPairs: number;
+	liquidityUsdTotal: number;
+	volume24hTotal: number;
+	transactions24h: { buys: number; sells: number };
+	primaryPair?: {
+		chainId: string;
+		dexId: string;
+		pairAddress: string;
+		priceUsd?: string;
+		liquidityUsd?: number;
+		fdv?: number;
+		marketCap?: number;
+		url: string;
+	};
+}
+
 export interface DexscreenerClientConfig {
 	/** Optionally override base URL, defaults to public Dexscreener API */
 	baseUrl?: string;
@@ -83,6 +102,63 @@ export class DexscreenerClient {
 	public async getPairsByToken(tokenAddress: string): Promise<DexscreenerPairsResponse> {
 		const path = `/latest/dex/tokens/${encodeURIComponent(tokenAddress)}`;
 		return await this.request<DexscreenerPairsResponse>(path);
+	}
+
+	/** GET /latest/dex/pairs/{chainId}/{pairId} */
+	public async getPairByChainAndAddress(chainId: string, pairId: string): Promise<DexscreenerPairsResponse> {
+		const path = `/latest/dex/pairs/${encodeURIComponent(chainId)}/${encodeURIComponent(pairId)}`;
+		return await this.request<DexscreenerPairsResponse>(path);
+	}
+
+	/** GET /latest/dex/search?q= */
+	public async searchPairs(query: string): Promise<DexscreenerPairsResponse> {
+		const q = encodeURIComponent(query);
+		const path = `/latest/dex/search?q=${q}`;
+		return await this.request<DexscreenerPairsResponse>(path);
+	}
+
+	/** GET /token-pairs/v1/{chainId}/{tokenAddress} */
+	public async getTokenPools(chainId: string, tokenAddress: string): Promise<DexscreenerPairItem[]> {
+		const path = `/token-pairs/v1/${encodeURIComponent(chainId)}/${encodeURIComponent(tokenAddress)}`;
+		return await this.request<DexscreenerPairItem[]>(path);
+	}
+
+	/** GET /tokens/v1/{chainId}/{tokenAddresses} (comma-separated addresses, up to 30) */
+	public async getTokensByAddresses(chainId: string, tokenAddresses: string[]): Promise<DexscreenerPairItem[]> {
+		const joined = tokenAddresses.map((a) => encodeURIComponent(a)).join(",");
+		const path = `/tokens/v1/${encodeURIComponent(chainId)}/${joined}`;
+		return await this.request<DexscreenerPairItem[]>(path);
+	}
+
+	/** GET /token-profiles/latest/v1 */
+	public async getLatestTokenProfiles(): Promise<unknown> {
+		return await this.request<unknown>(`/token-profiles/latest/v1`);
+	}
+
+	/** GET /community-takeovers/latest/v1 */
+	public async getLatestCommunityTakeovers(): Promise<unknown> {
+		return await this.request<unknown>(`/community-takeovers/latest/v1`);
+	}
+
+	/** GET /ads/latest/v1 */
+	public async getLatestAds(): Promise<unknown> {
+		return await this.request<unknown>(`/ads/latest/v1`);
+	}
+
+	/** GET /token-boosts/latest/v1 */
+	public async getLatestTokenBoosts(): Promise<unknown> {
+		return await this.request<unknown>(`/token-boosts/latest/v1`);
+	}
+
+	/** GET /token-boosts/top/v1 */
+	public async getTopTokenBoosts(): Promise<unknown> {
+		return await this.request<unknown>(`/token-boosts/top/v1`);
+	}
+
+	/** GET /orders/v1/{chainId}/{tokenAddress} */
+	public async getOrders(chainId: string, tokenAddress: string): Promise<unknown> {
+		const path = `/orders/v1/${encodeURIComponent(chainId)}/${encodeURIComponent(tokenAddress)}`;
+		return await this.request<unknown>(path);
 	}
 
 	private async request<T>(path: string): Promise<T> {
@@ -115,6 +191,46 @@ export class DexscreenerClient {
 		clearTimeout(timeout);
 		throw lastError instanceof Error ? lastError : new Error("Dexscreener request failed");
 	}
+}
+
+
+export function buildDexscreenerTokenSummary(tokenAddress: string, response: DexscreenerPairsResponse): DexscreenerTokenSummary {
+	const pairs = response.pairs ?? [];
+	const chains = Array.from(new Set(pairs.map((p) => p.chainId)));
+	let liquidityUsdTotal = 0;
+	let volume24hTotal = 0;
+	let buys24h = 0;
+	let sells24h = 0;
+
+	for (const p of pairs) {
+		if (p.liquidity?.usd) liquidityUsdTotal += p.liquidity.usd;
+		if (p.volume?.h24) volume24hTotal += p.volume.h24;
+		if (p.txns?.h24?.buys) buys24h += p.txns.h24.buys;
+		if (p.txns?.h24?.sells) sells24h += p.txns.h24.sells;
+	}
+
+	const primaryPair = [...pairs].sort((a, b) => (b.liquidity?.usd ?? 0) - (a.liquidity?.usd ?? 0))[0];
+
+	return {
+		tokenAddress,
+		chains,
+		numPairs: pairs.length,
+		liquidityUsdTotal,
+		volume24hTotal,
+		transactions24h: { buys: buys24h, sells: sells24h },
+		primaryPair: primaryPair
+			? {
+				chainId: primaryPair.chainId,
+				dexId: primaryPair.dexId,
+				pairAddress: primaryPair.pairAddress,
+				priceUsd: primaryPair.priceUsd,
+				liquidityUsd: primaryPair.liquidity?.usd,
+				fdv: primaryPair.fdv,
+				marketCap: primaryPair.marketCap,
+				url: primaryPair.url,
+			}
+			: undefined,
+	};
 }
 
 

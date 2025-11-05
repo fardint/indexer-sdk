@@ -1,6 +1,9 @@
 import { Address } from "viem";
 import { buildOnChain, type NetworkInput, DexscreenerClient, StellarExpertClient, XrpscanClient, AptosIndexerClient } from "./src";
+import { buildDexscreenerTokenSummary } from "./src/clients/DexscreenerClient";
 import { base, mainnet } from "viem/chains";
+import { writeFileSync } from "fs";
+import { resolve } from "path";
 
 const ZERO: Address = "0x0000000000000000000000000000000000000000";
 const WETH: Address = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
@@ -45,15 +48,24 @@ const { erc20Client, uniClient, addressClient, goldrushClient } = nets[0];
 
 
 // Dexscreener sample: fetch pairs for a token on Solana (USD1)
-// const dexscreener = new DexscreenerClient();
-// const dsData = await dexscreener.getPairsByToken("USD1ttGY1N17NEEHLmELoaybftRBUSErhqYiQzvEmuB");
-// console.log(
-//   JSON.stringify(
-//     dsData,
-//     null,
-//     2
-//   )
-// );
+const dexscreener = new DexscreenerClient();
+const tokenAddress = "USD1ttGY1N17NEEHLmELoaybftRBUSErhqYiQzvEmuB";
+const dsData = await dexscreener.getPairsByToken(tokenAddress);
+const summary = buildDexscreenerTokenSummary(tokenAddress, dsData);
+
+// Extra Dexscreener endpoints per docs: https://docs.dexscreener.com/api/reference
+const pools = await dexscreener.getTokenPools("solana", tokenAddress);
+const tokensBatch = await dexscreener.getTokensByAddresses("solana", [tokenAddress]);
+const search = await dexscreener.searchPairs("USD1/USDC");
+const latestProfiles = await dexscreener.getLatestTokenProfiles();
+const latestBoosts = await dexscreener.getLatestTokenBoosts();
+
+// Save raw pairs and computed summary to dexscreener.json at project root
+writeFileSync(
+  resolve(process.cwd(), "dexscreener.json"),
+  JSON.stringify({ raw: dsData, summary, pools, tokensBatch, search, latestProfiles, latestBoosts }, null, 2),
+  "utf8"
+);
 
 // Stellar Expert sample: fetch asset details for BENJI
 // const stellar = new StellarExpertClient();
@@ -67,9 +79,9 @@ const { erc20Client, uniClient, addressClient, goldrushClient } = nets[0];
 // );
 
 // Aptos Indexer (GraphQL) sample: fetch fungible asset metadata
-const aptIndexer = new AptosIndexerClient();
-const aptosMeta = await aptIndexer.getFungibleAssetMetadata("0x7647a37bb1ee1f42953ca4a00f1cf347254d38a2aa31d2e37176bbb94c14cf75");
-console.log(JSON.stringify(aptosMeta, null, 2));
+// const aptIndexer = new AptosIndexerClient();
+// const aptosMeta = await aptIndexer.getFungibleAssetMetadata("0x7647a37bb1ee1f42953ca4a00f1cf347254d38a2aa31d2e37176bbb94c14cf75");
+// console.log(JSON.stringify(aptosMeta, null, 2));
 
 // XRPSCan sample: fetch RLUSD token details
 // const xrpscan = new XrpscanClient();
