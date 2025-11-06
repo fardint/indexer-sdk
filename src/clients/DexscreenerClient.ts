@@ -62,6 +62,8 @@ export interface DexscreenerPairsResponse {
 
 export interface DexscreenerTokenSummary {
 	tokenAddress: string;
+	tokenName?: string;
+	tokenSymbol?: string;
 	chains: string[];
 	numPairs: number;
 	liquidityUsdTotal: number;
@@ -201,18 +203,28 @@ export function buildDexscreenerTokenSummary(tokenAddress: string, response: Dex
 	let volume24hTotal = 0;
 	let buys24h = 0;
 	let sells24h = 0;
+	let tokenName: string | undefined = undefined;
+	let tokenSymbol: string | undefined = undefined;
 
 	for (const p of pairs) {
 		if (p.liquidity?.usd) liquidityUsdTotal += p.liquidity.usd;
 		if (p.volume?.h24) volume24hTotal += p.volume.h24;
 		if (p.txns?.h24?.buys) buys24h += p.txns.h24.buys;
 		if (p.txns?.h24?.sells) sells24h += p.txns.h24.sells;
+		if (!tokenName || !tokenSymbol) {
+			if (p.baseToken?.address?.toLowerCase() === tokenAddress.toLowerCase()) {
+				tokenName = p.baseToken.name;
+				tokenSymbol = p.baseToken.symbol;
+			}
+		}
 	}
 
 	const primaryPair = [...pairs].sort((a, b) => (b.liquidity?.usd ?? 0) - (a.liquidity?.usd ?? 0))[0];
 
 	return {
 		tokenAddress,
+		tokenName,
+		tokenSymbol,
 		chains,
 		numPairs: pairs.length,
 		liquidityUsdTotal,
