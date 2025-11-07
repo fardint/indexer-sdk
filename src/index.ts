@@ -43,3 +43,10 @@ export {
 	type AptosFungibleAssetMetadata,
 } from "./clients/AptosIndexerClient";
 
+export {
+	DexguruClient,
+	type DexguruClientConfig,
+	type DexguruPaginatedParams,
+	type DexguruHistoryParams,
+} from "./clients/DexguruClient";
+
