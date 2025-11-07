@@ -1,5 +1,5 @@
 import { Address } from "viem";
-import { buildOnChain, type NetworkInput, DexscreenerClient, StellarExpertClient, XrpscanClient, AptosIndexerClient, DexguruClient } from "./src";
+import { buildOnChain, type NetworkInput, DexscreenerClient, StellarExpertClient, XrpscanClient, AptosIndexerClient, DexguruClient, GeckoTerminalClient, buildGeckoTerminalTokenSummary } from "./src";
 import { buildDexscreenerTokenSummary } from "./src/clients/DexscreenerClient";
 import { base, mainnet } from "viem/chains";
 import { writeFileSync } from "fs";
@@ -68,35 +68,57 @@ const { erc20Client, uniClient, addressClient, goldrushClient } = nets[0];
 // );
 
 // --- DexGuru sample (optional, requires DEXGURU_API_KEY) ---
-const DEXGURU_API_KEY = process.env.DEXGURU_API_KEY;
-if (DEXGURU_API_KEY) {
-  const DEXGURU_BASE_URL = process.env.DEXGURU_BASE_URL ?? "https://api.dev.dex.guru"; // override to https://api.dex.guru in prod
-  console.log(`[DexGuru] Using base URL: ${DEXGURU_BASE_URL}`);
-  console.log(`[DexGuru] API key present: ${DEXGURU_API_KEY ? "yes" : "no"} (length: ${DEXGURU_API_KEY.length})`);
+// const DEXGURU_API_KEY = process.env.DEXGURU_API_KEY;
+// if (DEXGURU_API_KEY) {
+//   const DEXGURU_BASE_URL = process.env.DEXGURU_BASE_URL ?? "https://api.dev.dex.guru"; // override to https://api.dex.guru in prod
+//   console.log(`[DexGuru] Using base URL: ${DEXGURU_BASE_URL}`);
+//   console.log(`[DexGuru] API key present: ${DEXGURU_API_KEY ? "yes" : "no"} (length: ${DEXGURU_API_KEY.length})`);
   
-  try {
-    const guru = new DexguruClient({ apiKey: DEXGURU_API_KEY, baseUrl: DEXGURU_BASE_URL, timeoutMs: 20000 });
-    const networkId = 1;
-    const tokenLower = TOKEN.toLowerCase();
-    const now = Math.floor(Date.now() / 1000);
+//   try {
+//     const guru = new DexguruClient({ apiKey: DEXGURU_API_KEY, baseUrl: DEXGURU_BASE_URL, timeoutMs: 20000 });
+//     const networkId = 1;
+//     const tokenLower = TOKEN.toLowerCase();
+//     const now = Math.floor(Date.now() / 1000);
 
-    const out: any = { networkId, tokenAddress: tokenLower };
-    try { out.inventory = await guru.getTokenInventory(networkId, tokenLower); } catch (e) { out.inventory = { error: String(e) }; }
-    try { out.market = await guru.getTokenMarket(networkId, tokenLower); } catch (e) { out.market = { error: String(e) }; }
-    try { out.marketHistory = await guru.getTokenMarketHistory(networkId, tokenLower, { from: now - 86400, to: now, interval: "1h" }); } catch (e) { out.marketHistory = { error: String(e) }; }
-    try { out.swaps = await guru.getTokenSwaps(networkId, tokenLower, { begin_timestamp: now - 86400, sort_by: "timestamp", order: "desc", limit: 100, offset: 0 }); } catch (e) { out.swaps = { error: String(e) }; }
+//     const out: any = { networkId, tokenAddress: tokenLower };
+//     try { out.inventory = await guru.getTokenInventory(networkId, tokenLower); } catch (e) { out.inventory = { error: String(e) }; }
+//     try { out.market = await guru.getTokenMarket(networkId, tokenLower); } catch (e) { out.market = { error: String(e) }; }
+//     try { out.marketHistory = await guru.getTokenMarketHistory(networkId, tokenLower, { from: now - 86400, to: now, interval: "1h" }); } catch (e) { out.marketHistory = { error: String(e) }; }
+//     try { out.swaps = await guru.getTokenSwaps(networkId, tokenLower, { begin_timestamp: now - 86400, sort_by: "timestamp", order: "desc", limit: 100, offset: 0 }); } catch (e) { out.swaps = { error: String(e) }; }
 
-    writeFileSync(
-      resolve(process.cwd(), "dexguru.json"),
-      JSON.stringify(out, null, 2),
-      "utf8"
-    );
-    console.log(`[DexGuru] Data saved to dexguru.json`);
-  } catch (e) {
-    console.error(`[DexGuru] Failed to initialize client:`, e);
-  }
-} else {
-  console.log("[DexGuru] Skipping - DEXGURU_API_KEY not set");
+//     writeFileSync(
+//       resolve(process.cwd(), "dexguru.json"),
+//       JSON.stringify(out, null, 2),
+//       "utf8"
+//     );
+//     console.log(`[DexGuru] Data saved to dexguru.json`);
+//   } catch (e) {
+//     console.error(`[DexGuru] Failed to initialize client:`, e);
+//   }
+// } else {
+//   console.log("[DexGuru] Skipping - DEXGURU_API_KEY not set");
+// }
+
+// --- GeckoTerminal sample: fetch token data (e.g., Solana token) ---
+const geckoterminal = new GeckoTerminalClient();
+const geckoNetwork = "solana"; // or "ethereum", "base", etc.
+const geckoTokenAddress = "USD1ttGY1N17NEEHLmELoaybftRBUSErhqYiQzvEmuB"; // Solana token example
+try {
+  const gtData = await geckoterminal.getToken(geckoNetwork, geckoTokenAddress, true, false);
+  const gtSummary = buildGeckoTerminalTokenSummary(geckoNetwork, geckoTokenAddress, gtData);
+  
+  // Also fetch additional endpoints
+  const gtTrending = await geckoterminal.getTrendingPools(geckoNetwork).catch((e) => ({ error: String(e) }));
+  const gtNetworks = await geckoterminal.getNetworks().catch((e) => ({ error: String(e) }));
+  
+  writeFileSync(
+    resolve(process.cwd(), "geckoterminal.json"),
+    JSON.stringify({ raw: gtData, summary: gtSummary, trending: gtTrending, networks: gtNetworks }, null, 2),
+    "utf8"
+  );
+  console.log(`[GeckoTerminal] Data saved to geckoterminal.json`);
+} catch (e) {
+  console.error(`[GeckoTerminal] Error:`, e);
 }
 
 // Stellar Expert sample: fetch asset details for BENJI

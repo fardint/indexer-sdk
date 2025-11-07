@@ -49,4 +49,11 @@ export {
 	type DexguruPaginatedParams,
 	type DexguruHistoryParams,
 } from "./clients/DexguruClient";
+export {
+	GeckoTerminalClient,
+	type GeckoTerminalClientConfig,
+	type GeckoTerminalTokenResponse,
+	type GeckoTerminalTokenSummary,
+} from "./clients/GeckoTerminalClient";
+export { buildGeckoTerminalTokenSummary } from "./clients/GeckoTerminalClient";
 
