@@ -155,7 +155,7 @@ const MORALIS_API_KEY = process.env.MORALIS_API_KEY;
 if (MORALIS_API_KEY) {
   try {
     const moralis = new MoralisClient({ apiKey: MORALIS_API_KEY });
-    const kylinTokenAddress = "0x7d1afa7b718fb893db30a3abc0cfc608aaccebb0"; // KYL token
+    const kylinTokenAddress = "0x514910771AF9Ca656af840dff83E8264EcF986CA"; // KYL token
     const tokenData = await moralis.getERC20TokenPrice(kylinTokenAddress, "eth");
     const validatedData = moralis.validateTokenData(tokenData);
     
