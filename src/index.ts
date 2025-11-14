@@ -56,4 +56,5 @@ export {
 	type GeckoTerminalTokenSummary,
 } from "./clients/GeckoTerminalClient";
 export { buildGeckoTerminalTokenSummary } from "./clients/GeckoTerminalClient";
+export { MoralisClient, type MoralisClientConfig, type MoralisERC20TokenResponse } from "./clients/MoralisClient";
 

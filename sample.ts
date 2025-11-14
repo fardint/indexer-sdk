@@ -1,31 +1,31 @@
 import { Address } from "viem";
-import { buildOnChain, type NetworkInput, DexscreenerClient, StellarExpertClient, XrpscanClient, AptosIndexerClient, DexguruClient, GeckoTerminalClient, buildGeckoTerminalTokenSummary } from "./src";
+import { buildOnChain, type NetworkInput, DexscreenerClient, StellarExpertClient, XrpscanClient, AptosIndexerClient, DexguruClient, GeckoTerminalClient, buildGeckoTerminalTokenSummary, MoralisClient } from "./src";
 import { buildDexscreenerTokenSummary } from "./src/clients/DexscreenerClient";
 import { base, mainnet } from "viem/chains";
 import { writeFileSync } from "fs";
 import { resolve } from "path";
 
-const ZERO: Address = "0x0000000000000000000000000000000000000000";
-const WETH: Address = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
-const USDC: Address = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
+// const ZERO: Address = "0x0000000000000000000000000000000000000000";
+// const WETH: Address = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+// const USDC: Address = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 
-const TOKEN: Address = "0x808507121B80c02388fAd14726482e061B8da827";
+// const TOKEN: Address = "0x808507121B80c02388fAd14726482e061B8da827";
 
-const inputs: NetworkInput[] = [
-  {
-    chainId: 1,
-    chainName: "eth-mainnet",
-    rpcUrl: "https://eth-mainnet.g.alchemy.com/v2/GwL4E_7jzhO6_eH_aV3tkKlELSh7UQEO",
-    factory: ["0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"],
-    base: ["0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"],
-    walletAddress: ZERO,
-    quoteCurrency: "USD",
-    chain: mainnet,
-  },
-];
+// const inputs: NetworkInput[] = [
+//   {
+//     chainId: 1,
+//     chainName: "eth-mainnet",
+//     rpcUrl: "https://eth-mainnet.g.alchemy.com/v2/GwL4E_7jzhO6_eH_aV3tkKlELSh7UQEO",
+//     factory: ["0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"],
+//     base: ["0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"],
+//     walletAddress: ZERO,
+//     quoteCurrency: "USD",
+//     chain: mainnet,
+//   },
+// ];
 
-const nets = buildOnChain(inputs);
-const { erc20Client, uniClient, addressClient, goldrushClient } = nets[0];
+// const nets = buildOnChain(inputs);
+// const { erc20Client, uniClient, addressClient, goldrushClient } = nets[0];
 
 // console.log(await erc20Client.get(TOKEN, ZERO, ZERO));
 // console.log(await erc20Client.get(USDC, ZERO, ZERO));
@@ -99,27 +99,27 @@ const { erc20Client, uniClient, addressClient, goldrushClient } = nets[0];
 //   console.log("[DexGuru] Skipping - DEXGURU_API_KEY not set");
 // }
 
-// --- GeckoTerminal sample: fetch token data (e.g., Solana token) ---
-const geckoterminal = new GeckoTerminalClient();
-const geckoNetwork = "solana"; // or "ethereum", "base", etc.
-const geckoTokenAddress = "USD1ttGY1N17NEEHLmELoaybftRBUSErhqYiQzvEmuB"; // Solana token example
-try {
-  const gtData = await geckoterminal.getToken(geckoNetwork, geckoTokenAddress, true, false);
-  const gtSummary = buildGeckoTerminalTokenSummary(geckoNetwork, geckoTokenAddress, gtData);
+// // --- GeckoTerminal sample: fetch token data (e.g., Solana token) ---
+// const geckoterminal = new GeckoTerminalClient();
+// const geckoNetwork = "solana"; // or "ethereum", "base", etc.
+// const geckoTokenAddress = "USD1ttGY1N17NEEHLmELoaybftRBUSErhqYiQzvEmuB"; // Solana token example
+// try {
+//   const gtData = await geckoterminal.getToken(geckoNetwork, geckoTokenAddress, true, false);
+//   const gtSummary = buildGeckoTerminalTokenSummary(geckoNetwork, geckoTokenAddress, gtData);
   
-  // Also fetch additional endpoints
-  const gtTrending = await geckoterminal.getTrendingPools(geckoNetwork).catch((e) => ({ error: String(e) }));
-  const gtNetworks = await geckoterminal.getNetworks().catch((e) => ({ error: String(e) }));
+//   // Also fetch additional endpoints
+//   const gtTrending = await geckoterminal.getTrendingPools(geckoNetwork).catch((e) => ({ error: String(e) }));
+//   const gtNetworks = await geckoterminal.getNetworks().catch((e) => ({ error: String(e) }));
   
-  writeFileSync(
-    resolve(process.cwd(), "geckoterminal.json"),
-    JSON.stringify({ raw: gtData, summary: gtSummary, trending: gtTrending, networks: gtNetworks }, null, 2),
-    "utf8"
-  );
-  console.log(`[GeckoTerminal] Data saved to geckoterminal.json`);
-} catch (e) {
-  console.error(`[GeckoTerminal] Error:`, e);
-}
+//   writeFileSync(
+//     resolve(process.cwd(), "geckoterminal.json"),
+//     JSON.stringify({ raw: gtData, summary: gtSummary, trending: gtTrending, networks: gtNetworks }, null, 2),
+//     "utf8"
+//   );
+//   console.log(`[GeckoTerminal] Data saved to geckoterminal.json`);
+// } catch (e) {
+//   console.error(`[GeckoTerminal] Error:`, e);
+// }
 
 // Stellar Expert sample: fetch asset details for BENJI
 // const stellar = new StellarExpertClient();
@@ -149,3 +149,26 @@ try {
 // 	pageNumber: 0,
 // 	noSnapshot: false,
 // }),null, 2));
+
+// Moralis sample: fetch ERC20 token price and metadata
+const MORALIS_API_KEY = process.env.MORALIS_API_KEY;
+if (MORALIS_API_KEY) {
+  try {
+    const moralis = new MoralisClient({ apiKey: MORALIS_API_KEY });
+    const kylinTokenAddress = "0x7d1afa7b718fb893db30a3abc0cfc608aaccebb0"; // KYL token
+    const tokenData = await moralis.getERC20TokenPrice(kylinTokenAddress, "eth");
+    const validatedData = moralis.validateTokenData(tokenData);
+    
+    console.log("[Moralis] KYL Token Data:");
+    console.log(`Name: ${validatedData.tokenName} (${validatedData.tokenSymbol})`);
+    console.log(`Price: $${validatedData.usdPrice}`);
+    console.log(`24h Change: ${validatedData["24hrPercentChange"]}%`);
+    console.log(`Exchange: ${validatedData.exchangeName}`);
+    console.log(`Verified: ${validatedData.verifiedContract}`);
+    console.log(`Security Score: ${validatedData.securityScore}`);
+  } catch (e) {
+    console.error("[Moralis] Error:", e);
+  }
+} else {
+  console.log("[Moralis] Skipping - MORALIS_API_KEY not set");
+}
