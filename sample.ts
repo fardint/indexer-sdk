@@ -5,24 +5,24 @@ import { base, mainnet } from "viem/chains";
 import { writeFileSync } from "fs";
 import { resolve } from "path";
 
-// const ZERO: Address = "0x0000000000000000000000000000000000000000";
+const ZERO: Address = "0x0000000000000000000000000000000000000000";
 // const WETH: Address = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 // const USDC: Address = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 
 // const TOKEN: Address = "0x808507121B80c02388fAd14726482e061B8da827";
 
-// const inputs: NetworkInput[] = [
-//   {
-//     chainId: 1,
-//     chainName: "eth-mainnet",
-//     rpcUrl: "https://eth-mainnet.g.alchemy.com/v2/GwL4E_7jzhO6_eH_aV3tkKlELSh7UQEO",
-//     factory: ["0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"],
-//     base: ["0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"],
-//     walletAddress: ZERO,
-//     quoteCurrency: "USD",
-//     chain: mainnet,
-//   },
-// ];
+const inputs: NetworkInput[] = [
+  {
+    chainId: 1,
+    chainName: "eth-mainnet",
+    rpcUrl: "https://eth-mainnet.g.alchemy.com/v2/GwL4E_7jzhO6_eH_aV3tkKlELSh7UQEO",
+    factory: ["0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"],
+    base: ["0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"],
+    walletAddress: ZERO,
+    quoteCurrency: "USD",
+    chain: mainnet,
+  },
+];
 
 // const nets = buildOnChain(inputs);
 // const { erc20Client, uniClient, addressClient, goldrushClient } = nets[0];
