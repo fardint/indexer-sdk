@@ -1,7 +1,7 @@
 import { Address } from "viem";
 import { buildOnChain, type NetworkInput, DexscreenerClient, StellarExpertClient, XrpscanClient, AptosIndexerClient, DexguruClient, GeckoTerminalClient, buildGeckoTerminalTokenSummary, MoralisClient } from "./src";
 import { buildDexscreenerTokenSummary } from "./src/clients/DexscreenerClient";
-import { base, mainnet } from "viem/chains";
+import { arbitrum, avalanche, base, bsc, mainnet, optimism, polygon, sonic } from "viem/chains";
 import { writeFileSync } from "fs";
 import { resolve } from "path";
 
@@ -9,42 +9,113 @@ const ZERO: Address = "0x0000000000000000000000000000000000000000";
 // const WETH: Address = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 // const USDC: Address = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 
-// const TOKEN: Address = "0x808507121B80c02388fAd14726482e061B8da827";
-
 const inputs: NetworkInput[] = [
   {
     chainId: 1,
     chainName: "eth-mainnet",
     rpcUrl: "https://eth-mainnet.g.alchemy.com/v2/GwL4E_7jzhO6_eH_aV3tkKlELSh7UQEO",
-    factory: ["0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"],
-    base: ["0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"],
+    factory: [ZERO],
+    base: [ZERO],
     walletAddress: ZERO,
     quoteCurrency: "USD",
     chain: mainnet,
   },
+  {
+    chainId: 10,
+    chainName: "optimism-mainnet",
+    rpcUrl: "https://opt-mainnet.g.alchemy.com/v2/GwL4E_7jzhO6_eH_aV3tkKlELSh7UQEO",
+    factory: [ZERO],
+    base: [ZERO],
+    walletAddress: ZERO,
+    quoteCurrency: "USD",
+    chain: optimism,
+  },
+  {
+    chainId: 56,
+    chainName: "bsc-mainnet",
+    rpcUrl: "https://bnb-mainnet.g.alchemy.com/v2/GwL4E_7jzhO6_eH_aV3tkKlELSh7UQEO",
+    factory: [ZERO],
+    base: [ZERO],
+    walletAddress: ZERO,
+    quoteCurrency: "USD",
+    chain: bsc,
+  },
+  {
+    chainId: 137,
+    chainName: "polygon-mainnet",
+    rpcUrl: "https://bnb-mainnet.g.alchemy.com/v2/GwL4E_7jzhO6_eH_aV3tkKlELSh7UQEO",
+    factory: [ZERO],
+    base: [ZERO],
+    walletAddress: ZERO,
+    quoteCurrency: "USD",
+    chain: polygon,
+  },
+  {
+    chainId: 146,
+    chainName: "sonic-mainnet",
+    rpcUrl: "https://sonic-mainnet.g.alchemy.com/v2/GwL4E_7jzhO6_eH_aV3tkKlELSh7UQEO",
+    factory: [ZERO],
+    base: [ZERO],
+    walletAddress: ZERO,
+    quoteCurrency: "USD",
+    chain: sonic,
+  },
+  {
+    chainId: 8453,
+    chainName: "base-mainnet",
+    rpcUrl: "https://base-mainnet.g.alchemy.com/v2/GwL4E_7jzhO6_eH_aV3tkKlELSh7UQEO",
+    factory: [ZERO],
+    base: [ZERO],
+    walletAddress: ZERO,
+    quoteCurrency: "USD",
+    chain: base,
+  },
+  {
+    chainId: 42161,
+    chainName: "arbitrum-mainnet",
+    rpcUrl: "https://arb-mainnet.g.alchemy.com/v2/GwL4E_7jzhO6_eH_aV3tkKlELSh7UQEO",
+    factory: [ZERO],
+    base: [ZERO],
+    walletAddress: ZERO,
+    quoteCurrency: "USD",
+    chain: arbitrum,
+  },
+  {
+    chainId: 43114,
+    chainName: "avalanche-mainnet",
+    rpcUrl: "https://avax-mainnet.g.alchemy.com/v2/GwL4E_7jzhO6_eH_aV3tkKlELSh7UQEO",
+    factory: [ZERO],
+    base: [ZERO],
+    walletAddress: ZERO,
+    quoteCurrency: "USD",
+    chain: avalanche,
+  },
 ];
 
-// const nets = buildOnChain(inputs);
-// const { erc20Client, uniClient, addressClient, goldrushClient } = nets[0];
+const nets = buildOnChain(inputs);
+const { erc20Client, uniClient, addressClient, goldrushClient } = nets[2];
 
-// console.log(await erc20Client.get(TOKEN, ZERO, ZERO));
+
 // console.log(await erc20Client.get(USDC, ZERO, ZERO));
 // console.log(await uniClient.findPairsForTokenInFactory(nets[0].config.factory[0], TOKEN , 0n, 464n));
 // console.log(await addressClient.get(TOKEN));
 
-// console.log(
-//   JSON.stringify(
-//     await goldrushClient.getHistoricalTokenPrices({
-//       chainName: nets[0].config.chainName,
-//       quoteCurrency: "USD",
-//       contractAddresses: TOKEN,
-//       from: "2024-10-27",
-//       to: "2025-10-28",
-//     }),
-//     null,
-//     2
-//   )
-// );
+const TOKEN: Address = "0x2d5bdc96d9c8aabbdb38c9a27398513e7e5ef84f";
+console.log(await erc20Client.get(TOKEN, ZERO, ZERO));
+
+console.log(
+  JSON.stringify(
+    await goldrushClient.getHistoricalTokenPrices({
+      chainName: nets[2].config.chainName,
+      quoteCurrency: "USD",
+      contractAddresses: TOKEN,
+      from: "2024-10-27",
+      to: "2025-10-28",
+    }),
+    null,
+    2
+  )
+);
 
 
 // Dexscreener sample: fetch pairs for a token on Solana (USD1)
@@ -151,24 +222,24 @@ const inputs: NetworkInput[] = [
 // }),null, 2));
 
 // Moralis sample: fetch ERC20 token price and metadata
-const MORALIS_API_KEY = process.env.MORALIS_API_KEY;
-if (MORALIS_API_KEY) {
-  try {
-    const moralis = new MoralisClient({ apiKey: MORALIS_API_KEY });
-    const kylinTokenAddress = "0x514910771AF9Ca656af840dff83E8264EcF986CA"; // KYL token
-    const tokenData = await moralis.getERC20TokenPrice(kylinTokenAddress, "eth");
-    const validatedData = moralis.validateTokenData(tokenData);
+// const MORALIS_API_KEY = process.env.MORALIS_API_KEY;
+// if (MORALIS_API_KEY) {
+//   try {
+//     const moralis = new MoralisClient({ apiKey: MORALIS_API_KEY });
+//     const kylinTokenAddress = "0x514910771AF9Ca656af840dff83E8264EcF986CA"; // KYL token
+//     const tokenData = await moralis.getERC20TokenPrice(kylinTokenAddress, "eth");
+//     const validatedData = moralis.validateTokenData(tokenData);
     
-    console.log("[Moralis] KYL Token Data:");
-    console.log(`Name: ${validatedData.tokenName} (${validatedData.tokenSymbol})`);
-    console.log(`Price: $${validatedData.usdPrice}`);
-    console.log(`24h Change: ${validatedData["24hrPercentChange"]}%`);
-    console.log(`Exchange: ${validatedData.exchangeName}`);
-    console.log(`Verified: ${validatedData.verifiedContract}`);
-    console.log(`Security Score: ${validatedData.securityScore}`);
-  } catch (e) {
-    console.error("[Moralis] Error:", e);
-  }
-} else {
-  console.log("[Moralis] Skipping - MORALIS_API_KEY not set");
-}
+//     console.log("[Moralis] KYL Token Data:");
+//     console.log(`Name: ${validatedData.tokenName} (${validatedData.tokenSymbol})`);
+//     console.log(`Price: $${validatedData.usdPrice}`);
+//     console.log(`24h Change: ${validatedData["24hrPercentChange"]}%`);
+//     console.log(`Exchange: ${validatedData.exchangeName}`);
+//     console.log(`Verified: ${validatedData.verifiedContract}`);
+//     console.log(`Security Score: ${validatedData.securityScore}`);
+//   } catch (e) {
+//     console.error("[Moralis] Error:", e);
+//   }
+// } else {
+//   console.log("[Moralis] Skipping - MORALIS_API_KEY not set");
+// }
