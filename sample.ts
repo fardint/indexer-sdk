@@ -13,6 +13,7 @@ const inputs: NetworkInput[] = [
   {
     chainId: 1,
     chainName: "eth-mainnet",
+    // geckoTerminalId: "eth",
     rpcUrl: "https://eth-mainnet.g.alchemy.com/v2/GwL4E_7jzhO6_eH_aV3tkKlELSh7UQEO",
     factory: [ZERO],
     base: [ZERO],
@@ -23,6 +24,7 @@ const inputs: NetworkInput[] = [
   {
     chainId: 10,
     chainName: "optimism-mainnet",
+    // geckoTerminalId: "optimism",
     rpcUrl: "https://opt-mainnet.g.alchemy.com/v2/GwL4E_7jzhO6_eH_aV3tkKlELSh7UQEO",
     factory: [ZERO],
     base: [ZERO],
@@ -33,6 +35,7 @@ const inputs: NetworkInput[] = [
   {
     chainId: 56,
     chainName: "bsc-mainnet",
+    // geckoTerminalId: "bsc",
     rpcUrl: "https://bnb-mainnet.g.alchemy.com/v2/GwL4E_7jzhO6_eH_aV3tkKlELSh7UQEO",
     factory: [ZERO],
     base: [ZERO],
@@ -43,6 +46,7 @@ const inputs: NetworkInput[] = [
   {
     chainId: 137,
     chainName: "polygon-mainnet",
+    // geckoTerminalId: "polygon_pos",
     rpcUrl: "https://bnb-mainnet.g.alchemy.com/v2/GwL4E_7jzhO6_eH_aV3tkKlELSh7UQEO",
     factory: [ZERO],
     base: [ZERO],
@@ -53,6 +57,7 @@ const inputs: NetworkInput[] = [
   {
     chainId: 146,
     chainName: "sonic-mainnet",
+    // geckoTerminalId: "sonic",
     rpcUrl: "https://sonic-mainnet.g.alchemy.com/v2/GwL4E_7jzhO6_eH_aV3tkKlELSh7UQEO",
     factory: [ZERO],
     base: [ZERO],
@@ -63,6 +68,7 @@ const inputs: NetworkInput[] = [
   {
     chainId: 8453,
     chainName: "base-mainnet",
+    // geckoTerminalId: "base",
     rpcUrl: "https://base-mainnet.g.alchemy.com/v2/GwL4E_7jzhO6_eH_aV3tkKlELSh7UQEO",
     factory: [ZERO],
     base: [ZERO],
@@ -73,6 +79,7 @@ const inputs: NetworkInput[] = [
   {
     chainId: 42161,
     chainName: "arbitrum-mainnet",
+    // geckoTerminalId: "arbitrum",
     rpcUrl: "https://arb-mainnet.g.alchemy.com/v2/GwL4E_7jzhO6_eH_aV3tkKlELSh7UQEO",
     factory: [ZERO],
     base: [ZERO],
@@ -83,6 +90,7 @@ const inputs: NetworkInput[] = [
   {
     chainId: 43114,
     chainName: "avalanche-mainnet",
+    // geckoTerminalId: "avax",
     rpcUrl: "https://avax-mainnet.g.alchemy.com/v2/GwL4E_7jzhO6_eH_aV3tkKlELSh7UQEO",
     factory: [ZERO],
     base: [ZERO],
