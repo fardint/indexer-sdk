@@ -100,30 +100,30 @@ const inputs: NetworkInput[] = [
   },
 ];
 
-const nets = buildOnChain(inputs);
-const { erc20Client, uniClient, addressClient, goldrushClient } = nets[2];
+// const nets = buildOnChain(inputs);
+// const { erc20Client, uniClient, addressClient, goldrushClient } = nets[2];
 
 
-// console.log(await erc20Client.get(USDC, ZERO, ZERO));
-// console.log(await uniClient.findPairsForTokenInFactory(nets[0].config.factory[0], TOKEN , 0n, 464n));
-// console.log(await addressClient.get(TOKEN));
+// // console.log(await erc20Client.get(USDC, ZERO, ZERO));
+// // console.log(await uniClient.findPairsForTokenInFactory(nets[0].config.factory[0], TOKEN , 0n, 464n));
+// // console.log(await addressClient.get(TOKEN));
 
-const TOKEN: Address = "0x2d5bdc96d9c8aabbdb38c9a27398513e7e5ef84f";
-console.log(await erc20Client.get(TOKEN, ZERO, ZERO));
+// const TOKEN: Address = "0x2d5bdc96d9c8aabbdb38c9a27398513e7e5ef84f";
+// console.log(await erc20Client.get(TOKEN, ZERO, ZERO));
 
-console.log(
-  JSON.stringify(
-    await goldrushClient.getHistoricalTokenPrices({
-      chainName: nets[2].config.chainName,
-      quoteCurrency: "USD",
-      contractAddresses: TOKEN,
-      from: "2024-10-27",
-      to: "2025-10-28",
-    }),
-    null,
-    2
-  )
-);
+// console.log(
+//   JSON.stringify(
+//     await goldrushClient.getHistoricalTokenPrices({
+//       chainName: nets[2].config.chainName,
+//       quoteCurrency: "USD",
+//       contractAddresses: TOKEN,
+//       from: "2024-10-27",
+//       to: "2025-10-28",
+//     }),
+//     null,
+//     2
+//   )
+// );
 
 
 // Dexscreener sample: fetch pairs for a token on Solana (USD1)
@@ -132,14 +132,14 @@ console.log(
 // const dsData = await dexscreener.getPairsByToken(tokenAddress);
 // const summary = buildDexscreenerTokenSummary(tokenAddress, dsData);
 
-// // Extra Dexscreener endpoints per docs: https://docs.dexscreener.com/api/reference
+// Extra Dexscreener endpoints per docs: https://docs.dexscreener.com/api/reference
 // const pools = await dexscreener.getTokenPools("solana", tokenAddress);
 // const tokensBatch = await dexscreener.getTokensByAddresses("solana", [tokenAddress]);
 // const search = await dexscreener.searchPairs("USD1/USDC");
 // const latestProfiles = await dexscreener.getLatestTokenProfiles();
 // const latestBoosts = await dexscreener.getLatestTokenBoosts();
 
-// // Save raw pairs and computed summary to dexscreener.json at project root
+// Save raw pairs and computed summary to dexscreener.json at project root
 // writeFileSync(
 //   resolve(process.cwd(), "dexscreener.json"),
 //   JSON.stringify({ raw: dsData, summary, pools, tokensBatch, search, latestProfiles, latestBoosts }, null, 2),
@@ -178,27 +178,38 @@ console.log(
 //   console.log("[DexGuru] Skipping - DEXGURU_API_KEY not set");
 // }
 
-// // --- GeckoTerminal sample: fetch token data (e.g., Solana token) ---
-// const geckoterminal = new GeckoTerminalClient();
-// const geckoNetwork = "solana"; // or "ethereum", "base", etc.
-// const geckoTokenAddress = "USD1ttGY1N17NEEHLmELoaybftRBUSErhqYiQzvEmuB"; // Solana token example
-// try {
-//   const gtData = await geckoterminal.getToken(geckoNetwork, geckoTokenAddress, true, false);
-//   const gtSummary = buildGeckoTerminalTokenSummary(geckoNetwork, geckoTokenAddress, gtData);
-  
-//   // Also fetch additional endpoints
-//   const gtTrending = await geckoterminal.getTrendingPools(geckoNetwork).catch((e) => ({ error: String(e) }));
-//   const gtNetworks = await geckoterminal.getNetworks().catch((e) => ({ error: String(e) }));
-  
-//   writeFileSync(
-//     resolve(process.cwd(), "geckoterminal.json"),
-//     JSON.stringify({ raw: gtData, summary: gtSummary, trending: gtTrending, networks: gtNetworks }, null, 2),
-//     "utf8"
-//   );
-//   console.log(`[GeckoTerminal] Data saved to geckoterminal.json`);
-// } catch (e) {
-//   console.error(`[GeckoTerminal] Error:`, e);
-// }
+const GECKO_SAMPLE_NETWORK = "eth";
+const GECKO_SAMPLE_TOKEN = "0xe50365f5d679cb98a1dd62d6f6e58e59321bcddf";
+const GECKO_SAMPLE_OUTPUT = resolve(process.cwd(), "geckoterminal.json");
+
+async function runLatokenGeckoSample() {
+  const geckoterminal = new GeckoTerminalClient();
+  try {
+    const gtData = await geckoterminal.getToken(GECKO_SAMPLE_NETWORK, GECKO_SAMPLE_TOKEN, true, false);
+    const gtSummary = buildGeckoTerminalTokenSummary(GECKO_SAMPLE_NETWORK, GECKO_SAMPLE_TOKEN, gtData);
+
+    writeFileSync(
+      GECKO_SAMPLE_OUTPUT,
+      JSON.stringify(
+        {
+          request: { network: GECKO_SAMPLE_NETWORK, tokenAddress: GECKO_SAMPLE_TOKEN },
+          raw: gtData,
+          summary: gtSummary,
+        },
+        null,
+        2
+      ),
+      "utf8"
+    );
+
+    console.log(`[GeckoTerminal] LAToken summary saved to ${GECKO_SAMPLE_OUTPUT}`);
+    console.dir(gtSummary, { depth: null });
+  } catch (e) {
+    console.error(`[GeckoTerminal] Error while fetching LAToken sample:`, e);
+  }
+}
+
+void runLatokenGeckoSample();
 
 // Stellar Expert sample: fetch asset details for BENJI
 // const stellar = new StellarExpertClient();
